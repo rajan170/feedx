@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -30,23 +29,17 @@ func main() {
 	}))
 
 	v1Router := chi.NewRouter()
-	fmt.Print(v1Router)
+	v1Router.Get("/healthz", handlerReadiness)
+	v1Router.Get("/err", handlerErr)
+
+	router.Mount("/v1", v1Router)
 
 	srv := &http.Server{
-		Handler: router,
 		Addr:    ":" + port,
+		Handler: router,
 	}
 
-	err := srv.ListenAndServe()
-
-	if err != nil {
-		log.Fatal("Failed to start server", err)
-	} else {
-		log.Printf("Server started at port: {%v}", port)
-	}
-
-	fmt.Printf("Server started at port: {%v}", port)
-
-	fmt.Println("Port: ", port)
+	log.Printf("Serving on port %s\n", port)
+	log.Fatal(srv.ListenAndServe())
 
 }
