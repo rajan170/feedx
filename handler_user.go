@@ -7,22 +7,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/rajan170/feedx.git/internal/auth"
 	"github.com/rajan170/feedx.git/internal/database"
 )
 
-func (apiCfg *apiConfig) handleGetUser(w http.ResponseWriter, r *http.Request) {
-	apiKey, err := auth.GetAPIKey(r.Header)
-	if err != nil {
-		respondWithError(w, 403, fmt.Sprintf("Auth Error: %v", err))
-		return
-	}
-
-	user, err := apiCfg.DB.GETUserByAPIKey(r.Context(), apiKey)
-	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("Couldn't get User %v", err))
-	}
-
+func (apiCfg *apiConfig) handleGetUser(w http.ResponseWriter, r *http.Request, user database.User) {
 	respondWithJSON(w, 200, databaseUserToUser(user))
 }
 
